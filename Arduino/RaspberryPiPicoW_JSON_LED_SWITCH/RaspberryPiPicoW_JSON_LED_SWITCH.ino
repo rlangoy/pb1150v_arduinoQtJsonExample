@@ -8,16 +8,7 @@ void setup() {
 // Allocate the JSON document
 JsonDocument doc;
 
-void loop() {
-  // put your main code here, to run repeatedly:
-  if (BOOTSEL) {
-      Serial.println(F("{\"SwitchBootSel\": 1}"));//'{ "SwitchBootSel": 1}'
-      while (BOOTSEL) {
-          delay(1);
-      }
-      Serial.println(F("{\"SwitchBootSel\": 0}"));//'{ "SwitchBootSel": 0}'
-  }
-
+void serialInputChecker(){
   if(Serial.available())
   {
       String input=Serial.readString();
@@ -32,8 +23,22 @@ void loop() {
         if(userLedStatus==0)
           digitalWrite(LED_BUILTIN, LOW);
            
-      }
+      }   
   }
+}
 
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (BOOTSEL) {
+      Serial.println(F("{\"SwitchBootSel\": 1}"));//'{ "SwitchBootSel": 1}'
+      while (BOOTSEL) {
+          delay(.01);
+          serialInputChecker();  //check for serial port input
+      }
+      Serial.println(F("{\"SwitchBootSel\": 0}"));//'{ "SwitchBootSel": 0}'
+  }
+  
+  serialInputChecker(); //check for serial port input
 
 }
