@@ -24,7 +24,8 @@ void serialInputChecker(){
       // Serial.println(input); //Debug
       deserializeJson(doc, input);
 
-      if(doc.containsKey("userLedOn")) 
+      //chk if {"userLedOn": x}  returns an int should be 0 or 1
+      if(doc["userLedOn"].is<int>())
       { long userLedStatus= doc["userLedOn"];
         // Serial.println(userLedStatus); // Debug
         if(userLedStatus==1)
