@@ -1,8 +1,17 @@
 #include "ArduinoJson.h"
 
+const int potVccPin =  27;             // the VCC input pin of the Potmeter
+const int pot1OutputVoltagePin = 26;     // the output voltage pin from Potmeter
+
 void setup() {
   // Initialize the LED as an output
   pinMode(LED_BUILTIN, OUTPUT);
+  
+  // initialize Potmeter VCC pin as an HIGH output 
+  pinMode(potVccPin, OUTPUT);
+  digitalWrite(potVccPin, HIGH);
+
+  pinMode(pot1OutputVoltagePin,INPUT);
 }
 
 // Allocate the JSON document
@@ -27,6 +36,24 @@ void serialInputChecker(){
   }
 }
 
+int _pot1OutputVoltagePin=-1;
+
+void analogInpuPot1tChecker(){
+  // Read analog value
+  int currentPot1OutputAnalogValue=analogRead(pot1OutputVoltagePin);
+
+  //Chek if analog value has changed by more than delta (due to noise)
+  int delta=24;
+  //if( _pot1OutputVoltagePin != currentPot1OutputAnalogValue)
+  if (( _pot1OutputVoltagePin + delta < currentPot1OutputAnalogValue)  ||  (_pot1OutputVoltagePin - delta > currentPot1OutputAnalogValue)   ) 
+  {   //Update old value
+      _pot1OutputVoltagePin=currentPot1OutputAnalogValue;      
+      //Send new JSON message
+     Serial.print(F("{\"Pot1Value\":")); //1}"));//'{ "SwitchBootSel": 1}'     
+     Serial.print(currentPot1OutputAnalogValue);
+     Serial.println(F("}"));
+  }
+}
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -39,6 +66,7 @@ void loop() {
       Serial.println(F("{\"SwitchBootSel\": 0}"));//'{ "SwitchBootSel": 0}'
   }
   
-  serialInputChecker(); //check for serial port input
+  analogInpuPot1tChecker();  // check if pot1 has changed it's value
+  serialInputChecker();      // check for serial port input
 
 }
